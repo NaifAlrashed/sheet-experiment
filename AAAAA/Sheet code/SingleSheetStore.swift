@@ -13,6 +13,8 @@ class SingleSheetStore: ObservableObject {
     private var isFirstTimeSettingHeight = true
     @Published private(set) var shouldDismiss = false
     
+    @Published var reslovedItemToShow: ResolvedItem? // let's pretend this is a resolved item
+    
     func update(to height: CGFloat, sheetStore: MapSheetsStore) {
         self.height = height
         if isFirstTimeSettingHeight {

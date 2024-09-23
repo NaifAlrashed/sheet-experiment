@@ -27,6 +27,12 @@ final class MapSheetsStore: ObservableObject {
         }
     }
     
+    func show(resolvedItem: String) {
+        if let currentSheet = sheets.last?.sheet {
+            currentSheet.reslovedItemToShow = ResolvedItem(title: resolvedItem)
+        }
+    }
+    
     /// dismisses the currently presetned sheet and update the height based on the previous sheet
     func dismiss() {
         currentSheetHeightSubscription?.cancel()

@@ -27,12 +27,10 @@ struct MapSheetModifier: ViewModifier {
             }
             .presentationDetents(detents, selection: $currentDetent)
             .presentationBackgroundInteraction(.enabled)
-            .onReceive(singleSheetStore.$shouldDismiss) { shouldDismiss in
-                if shouldDismiss {
-                    dismiss()
-                }
+            .sheet(item: $singleSheetStore.reslovedItemToShow) { resolvedItem in
+                POIView(resolvedItem: resolvedItem)
             }
-            .onChange(of: singleSheetStore.shouldDismiss) { _, shouldDismiss in
+            .onReceive(singleSheetStore.$shouldDismiss) { shouldDismiss in
                 if shouldDismiss {
                     dismiss()
                 }

@@ -9,15 +9,22 @@ import SwiftUI
 
 struct ContentView: View {
     @State var isPresented = false
-    @StateObject var sheetStore = MapSheetsStore()
+    @StateObject var mapSheetsStore = MapSheetsStore()
     var body: some View {
         ZStack {
-            Button("Display first sheet!") {
-                isPresented = true
-            }
-            .sheet(isPresented: $isPresented) {
-                ViewA()
-                    .environmentObject(sheetStore)
+            VStack {
+                if isPresented {
+                    Button("show anything on top of the current sheet") {
+                        mapSheetsStore.show(resolvedItem: "new resolvedItem!")
+                    }
+                }
+                Button("Display first sheet!") {
+                    isPresented = true
+                }
+                .sheet(isPresented: $isPresented) {
+                    ViewA()
+                        .environmentObject(mapSheetsStore)
+                }
             }
             VStack {
                 Spacer()
@@ -25,7 +32,7 @@ struct ContentView: View {
                     Circle()
                         .foregroundStyle(.red)
                         .frame(width: 50)
-                        .offset(x: 0, y: -sheetStore.height)
+                        .offset(x: 0, y: -mapSheetsStore.height)
                     Spacer()
                 }
             }
@@ -35,7 +42,7 @@ struct ContentView: View {
 struct ViewA: View {
     @State var isPresented = false
     @State var currentHeight: PresentationDetent = .fraction(0.3)
-    @EnvironmentObject var mapSheetStore: MapSheetsStore
+    @EnvironmentObject var mapSheetsStore: MapSheetsStore
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -52,7 +59,7 @@ struct ViewA: View {
             .toolbar {
                 ToolbarItem(placement: .navigation) {
                     Button("close") {
-                        mapSheetStore.dismiss()
+                        mapSheetsStore.dismiss()
                     }
                 }
             }
@@ -67,7 +74,6 @@ struct ViewA: View {
 struct ViewB: View {
     @State var isPresented = false
     @State var currentHeight: PresentationDetent = .fraction(0.5)
-    @EnvironmentObject var mapSheetStore: MapSheetsStore
     var body: some View {
         ScrollView {
             VStack {
@@ -84,6 +90,20 @@ struct ViewB: View {
             currentDetent: $currentHeight,
             detents: [.fraction(0.5), .fraction(0.9)]
         )
+    }
+}
+
+struct ResolvedItem: Identifiable {
+    let id = UUID()
+    let title: String
+}
+
+struct POIView: View {
+    let resolvedItem: ResolvedItem
+    @State var currentDetent: PresentationDetent = .medium
+    var body: some View {
+        Text("This is a POI! \(resolvedItem.title)")
+            .mapSheet(currentDetent: $currentDetent, detents: [.medium])
     }
 }
 
